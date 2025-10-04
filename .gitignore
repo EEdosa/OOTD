@@ -1,0 +1,13 @@
+# Node modules
+node_modules/
+
+# Environment variables
+*.env
+
+# Logs
+*.log
+
+# Dependency lock files
+package-lock.json
+frontend/package-lock.json
+backend/package-lock.json
