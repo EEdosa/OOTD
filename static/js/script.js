@@ -62,3 +62,88 @@ uploadInput.addEventListener("change", function() {
   const fileName = this.files[0]?.name || "No file chosen";
   alert(`Selected: ${fileName}`);
 });
+
+    // ---------------- IMAGE UPLOAD DETECTION ----------------
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+      const fileInput = document.getElementById("uploadInput");
+      const detectedItems = document.getElementById("detectedItems");
+
+      if (!fileInput.files.length) {
+        alert("Please select an image first.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      detectedItems.textContent = "🔍 Detecting outfit...";
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (data.prediction) {
+          detectedItems.innerHTML = `
+            <strong>👕 Detected:</strong> ${data.prediction}<br>
+            <em>Try pairing it with matching accessories or layers!</em>
+          `;
+        } else if (data.error) {
+          detectedItems.textContent = "⚠️ Error: " + data.error;
+        } else {
+          detectedItems.textContent = "No detection result received.";
+        }
+      } catch (err) {
+        detectedItems.textContent = "❌ Error connecting to server.";
+        console.error(err);
+      }
+    });
+
+    // make label open the file chooser
+    document.querySelector('.custom-file-upload').addEventListener('click', () => {
+      document.getElementById('uploadInput').click();
+    });
+
+    // ---------------- LIVE DETECTION (start/stop working properly) ----------------
+    const startBtn = document.getElementById('startLiveBtn');
+    const stopBtn = document.getElementById('stopLiveBtn');
+    const liveImg = document.getElementById('liveFeed');
+
+    startBtn.addEventListener('click', () => {
+      // If it's already streaming do nothing
+      if (liveImg.src && liveImg.src.includes('/video_feed')) return;
+
+      // Show the image element and open a single persistent MJPEG stream
+      liveImg.style.display = 'block';
+      liveImg.src = `/video_feed?rand=${Date.now()}`; // single connection to MJPEG stream
+
+      // update button states
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener('click', () => {
+      // Close the stream by clearing the src attribute
+      try {
+        liveImg.src = '';
+        liveImg.removeAttribute('src'); // ensure the browser closes the connection
+      } catch (e) {
+        console.warn('Error while stopping stream:', e);
+      }
+
+      // hide the element if you want
+      liveImg.style.display = 'none';
+
+      // update button states
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+
+    // Optional: if user navigates away, ensure stream is stopped
+    window.addEventListener('beforeunload', () => {
+      try { liveImg.src = ''; liveImg.removeAttribute('src'); } catch(e){}
+    });
