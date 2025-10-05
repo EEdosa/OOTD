@@ -21,8 +21,8 @@ It uses a pretrained CNN model (`.keras`) to classify clothing types and integra
 ### 🐍 Java Packages
 Install with:
 ```bash
-npm I express dotenv mongoose jsonwebtoken stripe cloudinary cookie-parser bcryptjs ioredis
-npm I nodemon -D
+npm i express dotenv mongoose jsonwebtoken stripe cloudinary cookie-parser bcryptjs ioredis
+npm i nodemon -D
 ```
 
 ### 🐍 Python Packages
