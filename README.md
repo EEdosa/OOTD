@@ -3,6 +3,8 @@
 Open Wardrobe is a **Flask + TensorFlow** web application that detects clothing items in real time using your webcam.  
 It uses a pretrained CNN model (`.keras`) to classify clothing types and integrates both **Flask** (Python backend) and **Node.js** (optional backend services).
 
+PLEASE RUN ON YOUR LOCAL HOST ....NOT CODESPACES
+DOES ALLOW OPENCV
 ---
 
 ## 🚀 Features
@@ -32,8 +34,11 @@ pip install flask flask-cors tensorflow opencv-python numpy pyttsx3
 sudo apt-get update
 sudo apt-get install -y libgl1 libglib2.0-0
 git lfs install
-
 ---
 Run using
 python app.py
 npm run dev
+---
+PLEASE RUN ON YOUR LOCAL HOST ....NOT CODESPACES
+DOES NOT ALLOW OPENCV
+
