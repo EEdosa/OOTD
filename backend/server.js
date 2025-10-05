@@ -11,7 +11,7 @@ import { connectDB } from './lib/db.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());         // Allows us to parse the body of the request.
 app.use(cookieParser());         // Allows us to get access to the cookies (cookies are used to remember personal information and for security/authentication).
