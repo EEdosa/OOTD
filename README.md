@@ -34,6 +34,7 @@ pip install flask flask-cors tensorflow opencv-python numpy pyttsx3
 sudo apt-get update
 sudo apt-get install -y libgl1 libglib2.0-0
 git lfs install
+git lfs pull
 ---
 Run using
 python app.py
