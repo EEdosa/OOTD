@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OOTD</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <header>
+    <div class="logo">O O T D</div>
+    <nav>
+      <a href="#" id="signupbttn">Sign Up</a>
+      <a href="#" id="loginbttn">Login</a>
+      <a href="#">About</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" alt="Hero">
+    <div class="hero-content">
+      <h2>OOTD</h2>
+      <p>Your Online Personal Closet</p>
+      <a href="#" class="btn" id="signupbttn">Sign Up</a>
+      <a href="#" class="btn" id="getStartedBtn">Get Started</a>
+      <a href="{{ url_for('main') }}" class="btn" style="margin-left: 10px; background: #222; color: white; border: 1px solid #555;">Preview Main Page</a>
+
+
+    </div>
+  </section>
+<!--
+  <section>
+    <h3>Your Outfits</h3>
+    <p>An immersive sensory experience with breathwork, music, and guided meditation.</p>
+    <div class="card-row">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb" alt="">
+        <div class="card-title">Deep Sleep</div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2" alt="">
+        <div class="card-title">Morning Routine</div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt="">
+        <div class="card-title">Ambient Calm</div>
+      </div>
+    </div>
+  </section>
+  -->
+  <!-- sign up popup-->
+ <div id="signupPopup" class="popup hidden "> <!-- nebi - remove the word hidden to see popup-->
+    <div class="popup-content glass">
+      <span id="closePopUp" class="close">&times;</span>
+      <h2>Create Account</h2>
+      <form id="signupForm">
+        <input type="text" placeholder="Username" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit" class="btn full">Sign Up</button>
+      </form>
+    </div>
+  </div>
+   <div id="loginPopup" class="popup hidden "> <!-- nebi - remove the word hidden to see popup-->
+    <div class="popup-content glass">
+      <span id="closeloginPopUp" class="close">&times;</span>
+      <h2>Login</h2>
+      <form id="LoginForm">
+        <input type="text" placeholder="Username" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit" class="btn full">Login</button>
+      </form>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
