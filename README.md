@@ -1,4 +1,4 @@
-# 🧥 Open Wardrobe – Real-Time Clothing Detection App
+# 🧥 FitCheck – Real-Time Clothing Detection App
 
 Open Wardrobe is a **Flask + TensorFlow** web application that detects clothing items in real time using your webcam.  
 It uses a pretrained CNN model (`.keras`) to classify clothing types and integrates both **Flask** (Python backend) and **Node.js** (optional backend services).
