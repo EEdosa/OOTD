@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page – Open Wardrobe</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    #liveFeed {
+      display: block;
+      margin: 20px auto;
+      max-width: 100%;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    .btn-live {
+      display: block;
+      margin: 10px auto 30px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">OOTD</div>
+    <nav>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('main') }}">My Wardrobe</a>
+      <a href="#">Outfits</a>
+      <a href="#">Account</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Welcome to Your Wardrobe 👕</h2>
+      <p>Upload your outfit image to detect your clothing and get AI-powered style recommendations.</p>
+
+      <label for="uploadInput" class="custom-file-upload">
+        <i class="fa fa-cloud-upload"></i> Choose Image
+      </label>
+      <input type="file" id="uploadInput" accept="image/*" />
+
+      <button class="btn" id="uploadBtn">Upload & Detect</button>
+
+      <button class="btn-live" id="liveBtn">Start Live Detection</button>
+      <img id="liveFeed" src="" alt="Live Detection Feed" />
+    </div>
+
+    <img
+      src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=60"
+      alt="Wardrobe preview"
+    />
+  </section>
+
+  <section>
+    <h3>Recommended Outfits</h3>
+    <div id="detectedItems" style="color:#ccc; font-size: 0.9rem;">
+      No outfits recommended yet.
+    </div>
+  </section>
+
+  <script>
+    // --- IMAGE UPLOAD DETECTION ---
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+      const fileInput = document.getElementById("uploadInput");
+      const detectedItems = document.getElementById("detectedItems");
+
+      if (!fileInput.files.length) {
+        alert("Please select an image first.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      detectedItems.textContent = "🔍 Detecting outfit...";
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (data.prediction) {
+          detectedItems.innerHTML = `
+            <strong>👕 Detected:</strong> ${data.prediction}<br>
+            <em>Try pairing it with matching accessories or layers!</em>
+          `;
+        } else if (data.error) {
+          detectedItems.textContent = "⚠️ Error: " + data.error;
+        } else {
+          detectedItems.textContent = "No detection result received.";
+        }
+      } catch (err) {
+        detectedItems.textContent = "❌ Error connecting to server.";
+        console.error(err);
+      }
+    });
+
+    // --- LIVE DETECTION ---
+    document.getElementById("liveBtn").addEventListener("click", () => {
+      const liveFeed = document.getElementById("liveFeed");
+      liveFeed.src = "/video_feed"; // Connect to Flask live feed
+
+    });
+  </script>
+  <section class="live-detection">
+  <h3>Live Clothing Detection</h3>
+  <img id="liveFeed" width="400" height="300" alt="Live feed will appear here" />
+  <div>
+    <button class="btn" id="liveBtn">Start Live Detection</button>
+    <button class="btn" id="stopBtn">Stop Live Detection</button>
+  </div>
+</section>
+<script>
+let liveInterval;
+
+document.getElementById("liveBtn").addEventListener("click", () => {
+  const liveFeed = document.getElementById("liveFeed");
+
+  // Clear any existing interval
+  if (liveInterval) clearInterval(liveInterval);
+
+  liveInterval = setInterval(() => {
+    liveFeed.src = `/video_feed?rand=${Math.random()}`; // avoid caching
+  }, 100); // update ~10fps
+});
+
+document.getElementById("stopBtn").addEventListener("click", () => {
+  if (liveInterval) {
+    clearInterval(liveInterval);
+    liveInterval = null;
+  }
+});
+</script>
+
+</body>
+</html>
