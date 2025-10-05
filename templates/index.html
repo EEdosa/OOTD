@@ -53,6 +53,14 @@
       </form>
     </div>
   </div>
+   <div id="logoutPopup" class="popup hidden "> <!-- nebi - remove the word hidden to see popup-->
+    <div class="popup-content glass">
+      <span id="closeloginPopUp" class="close">&times;</span>
+      <h2>Login</h2>
+        <button type="submit" class="btn full">Logout</button>
+      </form> 
+    </div>
+  </div>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
