@@ -246,3 +246,11 @@ input[type="file"] {
       background:#0b9a3f;
       border:1px solid #ddd;
     }
+    #liveFeed {
+  display: block;
+  margin: 20px auto;
+  width: 1500px;        /* 👈 set how wide you want it */
+  max-width: 100%;     /* stays responsive */
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}

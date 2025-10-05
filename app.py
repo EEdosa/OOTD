@@ -94,9 +94,26 @@ def generate_frames():
         preds = model.predict(img)
         label = class_names[np.argmax(preds)]
         confidence = np.max(preds)
+        # Text to display
+        text = f"{label} {confidence:.2f}"
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 1.2
+        thickness = 3
 
-        cv2.putText(frame, f"{label} {confidence:.2f}", (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # Get the text size
+        (text_width, text_height), _ = cv2.getTextSize(text, font, font_scale, thickness)
+
+        # Position in the top-center
+        x = (frame.shape[1] - text_width) // 2  # center horizontally
+        y = 30 + text_height                      # 30 px from top edge
+
+        # Optional: draw a background rectangle for readability
+        cv2.rectangle(frame, (x - 5, y - text_height - 5), (x + text_width + 5, y + 5), (0, 0, 0), -1)
+
+        # Draw the text
+        cv2.putText(frame, text, (x, y), font, font_scale, (0, 255, 0), thickness, cv2.LINE_AA)
+
+
 
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
