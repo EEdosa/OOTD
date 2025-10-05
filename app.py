@@ -1,38 +1,28 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 from flask_cors import CORS
 from tensorflow.keras.models import load_model
 import cv2
 import numpy as np
-import pyttsx3
 
 # --- Initialize Flask app ---
 app = Flask(__name__)
 CORS(app)
 
 # --- Load your trained .keras model ---
-model = load_model("DetectionModel.keras")
+model = load_model("final.keras")
+class_names = ['pants','shirt','shoes']
 
-# --- Initialize speech engine (for visually impaired users) ---
-engine = pyttsx3.init()
-
-def speak(text):
-    """Speak text aloud (useful for accessibility)."""
-    engine.say(text)
-    engine.runAndWait()
-
-# --- TEMPORARY TEST DATABASE (replace with MongoDB later) ---
+# --- TEMPORARY TEST DATABASE ---
 test_users = {}
 
 # --- ROUTES ---
 
 @app.route("/")
 def home():
-    """Landing page (sign-in / sign-up)."""
     return render_template("index.html")
 
 @app.route("/signup", methods=["POST"])
 def signup():
-    """Handle new user sign-up."""
     data = request.get_json() or request.form
     username = data.get("username")
     email = data.get("email")
@@ -51,7 +41,6 @@ def signup():
 
 @app.route("/signin", methods=["POST"])
 def signin():
-    """Handle user login."""
     data = request.get_json() or request.form
     email = data.get("email")
     password = data.get("password")
@@ -64,44 +53,69 @@ def signin():
 
 @app.route("/main")
 def main():
-    """Main page after login (upload & detection)."""
     return render_template("main.html")
 
-# --- CLOTHING DETECTION ROUTE ---
+# --- IMAGE UPLOAD DETECTION ---
 @app.route("/predict", methods=["POST"])
 def predict():
-    """Handle clothing detection from uploaded image."""
     file = request.files.get("image")
     if not file:
         return jsonify({"error": "No image uploaded"}), 400
 
     try:
-        # Read and preprocess image
-        img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
-        img = cv2.resize(img, (28, 28))  # Adjust this size to your model’s input
-        img = np.expand_dims(img, axis=0) / 255.0
+        img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
+        img = cv2.resize(img, (224, 224))
+        img = img.astype("float32") / 255.0
+        img = np.expand_dims(img, axis=0)
 
-        # Predict clothing class
         preds = model.predict(img)
-        class_names = ['T-Shirt', 'Pants', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle Boot']       
         predicted_class = class_names[np.argmax(preds)]
-        print(predicted_class)
-        predictions = model.predict(img)
-        probabilities = predictions[0]
-        print("Probabilities:", probabilities)
-
+        probabilities = preds[0]
         predicted_index = int(np.argmax(probabilities))
-        print("Predicted class index:", predicted_index)
-        
-        model.summary()
 
-        # Speak prediction for accessibility
-        speak(f"You are wearing {predicted_class}")
-
-        return jsonify({"prediction": predicted_class}), 200
+        return jsonify({"prediction": predicted_class, "probabilities": probabilities.tolist()}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# --- REAL-TIME WEBCAM DETECTION ---
+camera = cv2.VideoCapture(0)
+
+def generate_frames():
+    while True:
+        success, frame = camera.read()
+        if not success:
+            break
+
+        img = cv2.resize(frame, (224, 224))
+        img = img.astype("float32") / 255.0
+        img = np.expand_dims(img, axis=0)
+
+        preds = model.predict(img)
+        label = class_names[np.argmax(preds)]
+        confidence = np.max(preds)
+
+        cv2.putText(frame, f"{label} {confidence:.2f}", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# --- Release camera on exit ---
+import atexit
+@atexit.register
+def cleanup():
+    camera.release()
+    cv2.destroyAllWindows()
+
 
 
 if __name__ == "__main__":

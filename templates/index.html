@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OOTD</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
 
@@ -24,7 +24,7 @@
       <p>Your Online Personal Closet</p>
       <a href="#" class="btn" id="signupbttn">Sign Up</a>
       <a href="#" class="btn" id="getStartedBtn">Get Started</a>
-      <a href="{{ url_for('main') }}" class="btn" style="margin-left: 10px; background: #222; color: white; border: 1px solid #555;">Preview Main Page</a>
+      <a href="/main" class="btn" style="margin-left: 10px; background: #222; color: white; border: 1px solid #555;">Preview Main Page</a>
 
 
     </div>
@@ -74,6 +74,7 @@
       </form>
     </div>
   </div>
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
